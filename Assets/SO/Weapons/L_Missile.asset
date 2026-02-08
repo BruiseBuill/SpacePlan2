@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96d63d29621223d42a6f749df169228b, type: 3}
+  m_Name: L_Missile
+  m_EditorClassIdentifier: 
+  massLevel: 1
+  recoil: 0.04
+  bullet: {fileID: 6224068849470603869, guid: 5881592af2676704fab12c940dc37621, type: 3}
+  isStutterer: 0
+  bulletSpeed: 6
+  attackRangeOfBullet: 12
+  bulletSumPerClip: 1
+  hasInfiniteBullet: 0
+  initialBulletSum: 8
+  attackFlashEX: {fileID: 154094, guid: 6b86bf140fb7d3f43911f03a18d9ce4d, type: 3}
+  warmBreak: 0.4
+  coolBreak: 0
+  reloadTime: 1
+  sprite: {fileID: 21300000, guid: 061056e000ed1384082bddd8069f8b28, type: 3}

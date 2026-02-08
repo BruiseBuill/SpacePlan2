@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96d63d29621223d42a6f749df169228b, type: 3}
+  m_Name: X_Missile
+  m_EditorClassIdentifier: 
+  massLevel: 2
+  recoil: 0.04
+  bullet: {fileID: 6224068849470603869, guid: b6f2624284824c84e95f8ed891e1c81d, type: 3}
+  isStutterer: 0
+  bulletSpeed: 6
+  attackRangeOfBullet: 12
+  bulletSumPerClip: 1
+  hasInfiniteBullet: 0
+  initialBulletSum: 4
+  attackFlashEX: {fileID: 154094, guid: 3c9fa9ee44f4d694292a229b60e6a2df, type: 3}
+  warmBreak: 0.4
+  coolBreak: 0
+  reloadTime: 1.7
+  sprite: {fileID: 21300000, guid: 880eb5b5629c06449b019dd382b8078a, type: 3}

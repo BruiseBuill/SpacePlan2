@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96d63d29621223d42a6f749df169228b, type: 3}
+  m_Name: S_Shrapnel
+  m_EditorClassIdentifier: 
+  massLevel: 0
+  recoil: 0.01
+  bullet: {fileID: 8730858081241681981, guid: ec6515c5489841c49882753aee87abb5, type: 3}
+  isStutterer: 0
+  bulletSpeed: 9
+  attackRangeOfBullet: 6
+  bulletSumPerClip: 2
+  hasInfiniteBullet: 0
+  initialBulletSum: 30
+  attackFlashEX: {fileID: 173018, guid: 1ae6abee24799174b96c16d7451292af, type: 3}
+  warmBreak: 0.1
+  coolBreak: 0.7
+  reloadTime: 0.4
+  sprite: {fileID: 21300000, guid: 33bd229ccd1b9904fa8b0671574d3e91, type: 3}

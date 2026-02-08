@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96d63d29621223d42a6f749df169228b, type: 3}
+  m_Name: L_Sniper
+  m_EditorClassIdentifier: 
+  massLevel: 1
+  recoil: 0.02
+  bullet: {fileID: 650171454423966013, guid: 68f03dda3d84a074fa83d779a3deddc4, type: 3}
+  isStutterer: 0
+  bulletSpeed: 11
+  attackRangeOfBullet: 10.5
+  bulletSumPerClip: 6
+  hasInfiniteBullet: 0
+  initialBulletSum: 90
+  attackFlashEX: {fileID: 109206, guid: bc0ff71df8c0c17439fcf41f68b4f5e3, type: 3}
+  warmBreak: 0.125
+  coolBreak: 0
+  reloadTime: 0.85
+  sprite: {fileID: 21300000, guid: 806f9494e2fba2b44bf4542c0ce26752, type: 3}

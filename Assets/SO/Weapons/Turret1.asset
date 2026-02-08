@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96d63d29621223d42a6f749df169228b, type: 3}
+  m_Name: Turret1
+  m_EditorClassIdentifier: 
+  massLevel: 0
+  recoil: 0.02
+  bullet: {fileID: 6061860233061021441, guid: 5fef3ceb1dd2cb34fb3d69487ec8cb03, type: 3}
+  isStutterer: 0
+  bulletSpeed: 12
+  attackRangeOfBullet: 9.5
+  bulletSumPerClip: 60
+  hasInfiniteBullet: 1
+  initialBulletSum: 300
+  attackFlashEX: {fileID: 105160, guid: 3e9cea9f2e240bb408b8b689e850b5bf, type: 3}
+  warmBreak: 0.1
+  coolBreak: 0
+  reloadTime: 0
+  sprite: {fileID: 21300000, guid: 8f235bfa88e259c4fabf9d5f5de3356b, type: 3}
