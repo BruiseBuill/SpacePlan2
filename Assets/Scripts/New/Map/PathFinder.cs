@@ -42,18 +42,39 @@ namespace MapSearch
 				return fullGrid.chunk.chunkIndex == pathGrid.fullGrid.chunk.chunkIndex && fullGrid.grid == pathGrid.fullGrid.grid;
 			}
         }
-		enum FailCode {DirectLine=0,Astar=1 }
+		enum FailCode {Start=0, DirectLine=1,Astar=2 }
 
 
 
-		public async void FindPath(FullGrid start, FullGrid end, ref Action<List<FullGrid>> onAskFindPath)
+		public async void FindPath(FullGrid start, FullGrid end, Action<List<FullGrid>> onAskFindPath)
 		{
+			if (usedThreadCount >= MaxThreadCount)
+			{
+				onAskFindPath.Invoke(null);
+				return;
+			}
+			usedThreadCount++;
             List<FullGrid> path = await Task.Run(() => FindProcess(start, end));
             onAskFindPath.Invoke(FindProcess(start, end));
+			usedThreadCount--;
         }
 		List<FullGrid> FindProcess(FullGrid start, FullGrid end)
 		{
-            FindPathDirectLine(start, end);
+			List<FullGrid> list;
+
+            list = FindPathDirectLine(start, end);
+			if (list != null)
+			{
+				return list;
+			}
+
+            list = FindPathAStar(start, end);
+            if (list != null)
+            {
+                return list;
+            }
+
+			return null;
         }
         void FindPathDirectLinePhysics(FullGrid start, FullGrid end)
 		{
@@ -65,11 +86,11 @@ namespace MapSearch
 			var col = Physics2D.Raycast(worldPos_start, direction, distance);
 			if (col)
 			{
-                FindPathFail(FailCode.DirectLine,start,end);
+                //FindPathFail(FailCode.DirectLine,start,end);
             }
 
 		}
-		void FindPathDirectLine(FullGrid start, FullGrid end)
+        List<FullGrid> FindPathDirectLine(FullGrid start, FullGrid end)
 		{
 			var startPos = start.chunk.chunkIndex * Chunk.ChunkEdgeLength + start.grid;
 			var endPos = end.chunk.chunkIndex * Chunk.ChunkEdgeLength + end.grid;
@@ -81,11 +102,10 @@ namespace MapSearch
 				MapManager.Instance().FullGridMove(inter, list[i + 1] - list[i]);
                 if (inter.chunk.costs[Chunk.Get1DGridIndex(inter.grid)] > 0b11111110) 
 				{
-					FindPathFail(FailCode.DirectLine, start, end);
-					return;
+					return null;
                 }
 			}
-			FindPathSuccess(new List<FullGrid>() { end });
+			return new List<FullGrid>() { end };
         }
         List<Vector2Int> GetLineCells(Vector2Int a, Vector2Int b)
         {
@@ -132,7 +152,7 @@ namespace MapSearch
             return result;
         }
 
-        void FindPathAStar(FullGrid start, FullGrid end)
+        List<FullGrid> FindPathAStar(FullGrid start, FullGrid end)
 		{
 			PriorityList<PathGrid> openList = new PriorityList<PathGrid>();
 			List<PathGrid> closeList = new List<PathGrid>();
@@ -147,8 +167,7 @@ namespace MapSearch
 				openList.RemoveFirst();
                 if (present.IsSame(target))
 				{
-                    CutPath(present);
-					return;
+                    return CutPath(present);
 				}
 				for(int i = 0; i < searchDirection.Count; i++)
 				{
@@ -163,32 +182,17 @@ namespace MapSearch
 					openList.Add(new PathGrid(neighborGrid, present, newCost), newCost + ExpectFunc(neighborGrid, end));
                 }
 			}
-			FindPathFail(FailCode.Astar, start, end);
+			return null;
         }
-		void FindPathSuccess(List<FullGrid> list)
-		{
-
-		}
-		void FindPathFail(FailCode failCode, FullGrid start, FullGrid end)
-		{
-			switch (failCode)
-			{
-				case FailCode.DirectLine:
-					FindPathAStar(start,end);
-					break;
-				case FailCode.Astar:
-					
-					break;
-            }
-		}
+		
         int ExpectFunc(FullGrid start,FullGrid end)
 		{
 			Vector2Int a = start.chunk.chunkIndex * Chunk.ChunkEdgeLength + start.grid;
 			Vector2Int b = end.chunk.chunkIndex * Chunk.ChunkEdgeLength + end.grid;
 			Vector2Int c = b - a;
-			return Mathf.Abs(c.x) + Mathf.Abs(c.y);
+			return (Mathf.Abs(c.x) + Mathf.Abs(c.y)) * Chunk.DefaultGridCost;
 		}
-        void CutPath(PathGrid target)
+        List<FullGrid> CutPath(PathGrid target)
         {
 			var current = target;
 			var pathList = new List<FullGrid>();
@@ -209,7 +213,7 @@ namespace MapSearch
                 }
 				index--;
             }
-			FindPathSuccess(pathList);
+			return pathList;
         }
     }
 }

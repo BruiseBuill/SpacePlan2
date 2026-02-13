@@ -7,7 +7,6 @@ namespace MapSearch
 {
 	public class MapDebug : MonoBehaviour
 	{
-
         // 一维Byte数组
         [SerializeField] Chunk chunk;
         float cellSize = 1f;
@@ -32,7 +31,7 @@ namespace MapSearch
                         float normalizedValue = value / 255f;
 
                         // 设置颜色，根据数据值的深浅
-                        Gizmos.color = new Color(normalizedValue, normalizedValue, normalizedValue);
+                        Gizmos.color = new Color(normalizedValue, normalizedValue, normalizedValue,0.6f);
                         Vector3 position = startPos + new Vector3(j * cellSize, i * cellSize, 0);
                         Gizmos.DrawCube(position, new Vector3(cellSize, cellSize,0.1f));
                     }
