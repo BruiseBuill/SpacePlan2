@@ -456,8 +456,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4813684785b893468ccf5af4c1f0f25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chunk: {fileID: 0}
-  isDrawChunk: 0
+  chunk: {fileID: 11400000, guid: e4fe4c7172c8c744681cef7c9400aee4, type: 2}
+  isDrawChunk: 1
 --- !u!4 &1294572333
 Transform:
   m_ObjectHideFlags: 0
@@ -507,7 +507,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -533,6 +533,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rb: {fileID: 1782658823}
   aimPos: {x: 0, y: 0, z: 0}
+  isMoving: 0
+  realSpeed: 0
+  maxSpeed: 3
+  accelerate: 10
+  sqrArriveRadius: 0
 --- !u!212 &1782658825
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -610,6 +615,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1991951165}
   - component: {fileID: 1991951166}
+  - component: {fileID: 1991951168}
+  - component: {fileID: 1991951167}
   m_Layer: 0
   m_Name: Manager
   m_TagString: Untagged
@@ -650,3 +657,103 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 67c5e093fa4476b4f82b57475c8e077f, type: 2}
   - {fileID: 11400000, guid: 426c2b52330f69748af305c2e5a092c7, type: 2}
   chunkMapSize: {x: 2, y: 2}
+--- !u!114 &1991951167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1991951164}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d6ded28baa66704ba9eabaec283055f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1991951168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1991951164}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 992a652d7959a8f4d9fbbd334e3446ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canMouseInput: 1
+  minTouchPort: {x: 0, y: 0, z: 0}
+  maxTouchPort: {x: 1920, y: 1080, z: 0}
+  referenceTouchResolution: {x: 1920, y: 1080, z: 0}
+  dragOffset: 20
+  minLongPressTime: 0.25
+  doubleClickTime: 0.1
+  isDrag: 0
+--- !u!1 &2109230615
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2109230618}
+  - component: {fileID: 2109230617}
+  - component: {fileID: 2109230616}
+  m_Layer: 0
+  m_Name: EventSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2109230616
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2109230615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SendPointerHoverToParent: 1
+  m_HorizontalAxis: Horizontal
+  m_VerticalAxis: Vertical
+  m_SubmitButton: Submit
+  m_CancelButton: Cancel
+  m_InputActionsPerSecond: 10
+  m_RepeatDelay: 0.5
+  m_ForceModuleActive: 0
+--- !u!114 &2109230617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2109230615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_FirstSelected: {fileID: 0}
+  m_sendNavigationEvents: 1
+  m_DragThreshold: 10
+--- !u!4 &2109230618
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2109230615}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

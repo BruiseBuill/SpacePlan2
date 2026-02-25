@@ -55,7 +55,7 @@ namespace MapSearch
 			}
 			usedThreadCount++;
             List<FullGrid> path = await Task.Run(() => FindProcess(start, end));
-            onAskFindPath.Invoke(FindProcess(start, end));
+            onAskFindPath.Invoke(path);
 			usedThreadCount--;
         }
 		List<FullGrid> FindProcess(FullGrid start, FullGrid end)
@@ -92,6 +92,7 @@ namespace MapSearch
 		}
         List<FullGrid> FindPathDirectLine(FullGrid start, FullGrid end)
 		{
+			Debug.Log("DirectLine");
 			var startPos = start.chunk.chunkIndex * Chunk.ChunkEdgeLength + start.grid;
 			var endPos = end.chunk.chunkIndex * Chunk.ChunkEdgeLength + end.grid;
 
@@ -100,12 +101,91 @@ namespace MapSearch
 			for (int i = 0; i < list.Count - 1; i++) 
 			{
 				MapManager.Instance().FullGridMove(inter, list[i + 1] - list[i]);
+				
                 if (inter.chunk.costs[Chunk.Get1DGridIndex(inter.grid)] > 0b11111110) 
 				{
 					return null;
                 }
 			}
-			return new List<FullGrid>() { end };
+			return new List<FullGrid>() {start, end };
+        }
+
+        List<FullGrid> FindPathAStar(FullGrid start, FullGrid end)
+		{
+			Debug.Log("Astar");
+			PriorityList<PathGrid> openList = new PriorityList<PathGrid>();
+
+            start.chunk.pathFindCounter[Chunk.Get1DGridIndex(start.grid)] = searchCounter;
+			searchCounter++;
+            openList.Add(new PathGrid(start, null), 0);
+
+			PathGrid target = new PathGrid(end);
+			while (openList.Count > 0) 
+			{
+				PathGrid present = openList[0];
+				openList.RemoveFirst();
+                if (present.IsSame(target))
+				{
+                    return CutPath(present);
+				}
+				for(int i = 0; i < searchDirection.Count; i++)
+				{
+					var neighborGrid = MapManager.Instance().FullGridOffset(present.fullGrid, searchDirection[i]);
+					if (neighborGrid.chunk.pathFindCounter[Chunk.Get1DGridIndex(neighborGrid.grid)] == searchCounter) 
+					{
+						continue;
+					}
+					neighborGrid.chunk.pathFindCounter[Chunk.Get1DGridIndex(neighborGrid.grid)] = searchCounter;
+
+                    int newCost = present.totalUsedCost + neighborGrid.chunk.costs[Chunk.Get1DGridIndex(neighborGrid.grid)];
+					openList.Add(new PathGrid(neighborGrid, present, newCost), newCost + ExpectFunc(neighborGrid, end));
+                }
+			}
+			return null;
+        }
+		
+        int ExpectFunc(FullGrid start,FullGrid end)
+		{
+			Vector2Int a = start.chunk.chunkIndex * Chunk.ChunkEdgeLength + start.grid;
+			Vector2Int b = end.chunk.chunkIndex * Chunk.ChunkEdgeLength + end.grid;
+			Vector2Int c = b - a;
+			return (Mathf.Abs(c.x) + Mathf.Abs(c.y)) * Chunk.DefaultGridCost;
+		}
+        List<FullGrid> CutPath(PathGrid target)
+        {
+			
+			var current = target;
+			var pathList = new List<FullGrid>();
+			while (current.lastPathGrid != null) 
+			{
+				pathList.Add(current.fullGrid);
+				current = current.lastPathGrid;
+            }
+			pathList.Reverse();
+
+			Debug.Log("BeforeCut" + pathList.Count);
+
+			for (int i = 0; i < pathList.Count; i++)
+                Debug.Log(MapManager.Instance().FullGrid2WorldPos(pathList[i]));
+            //共线点删除
+            int index = pathList.Count - 1;
+            while (index > 2) 
+			{
+				
+				var a = pathList[index] - pathList[index - 1];
+				var b = pathList[index - 1] - pathList[index - 2];
+                if (a == b)
+				{
+                    Debug.Log(MapManager.Instance().FullGrid2WorldPos(pathList[index-1]));
+                    pathList.RemoveAt(index - 1);
+                }
+				index--;
+            }
+            Debug.Log("AfterCut" + pathList.Count);
+            for (int i = 0; i < pathList.Count; i++)
+                Debug.Log(MapManager.Instance().FullGrid2WorldPos(pathList[i]));
+            return pathList;
+            
         }
         List<Vector2Int> GetLineCells(Vector2Int a, Vector2Int b)
         {
@@ -150,70 +230,6 @@ namespace MapSearch
             }
 
             return result;
-        }
-
-        List<FullGrid> FindPathAStar(FullGrid start, FullGrid end)
-		{
-			PriorityList<PathGrid> openList = new PriorityList<PathGrid>();
-			List<PathGrid> closeList = new List<PathGrid>();
-
-            start.chunk.pathFindCounter[Chunk.Get1DGridIndex(start.grid)] = searchCounter;
-            openList.Add(new PathGrid(start, null), 0);
-
-			PathGrid target = new PathGrid(end);
-			while (openList.Count > 0) 
-			{
-				PathGrid present = openList[0];
-				openList.RemoveFirst();
-                if (present.IsSame(target))
-				{
-                    return CutPath(present);
-				}
-				for(int i = 0; i < searchDirection.Count; i++)
-				{
-					var neighborGrid = MapManager.Instance().FullGridOffset(present.fullGrid, searchDirection[i]);
-					if (neighborGrid.chunk.pathFindCounter[Chunk.Get1DGridIndex(neighborGrid.grid)] == searchCounter) 
-					{
-						continue;
-					}
-					neighborGrid.chunk.pathFindCounter[Chunk.Get1DGridIndex(neighborGrid.grid)] = searchCounter;
-
-                    int newCost = present.totalUsedCost + neighborGrid.chunk.costs[Chunk.Get1DGridIndex(neighborGrid.grid)];
-					openList.Add(new PathGrid(neighborGrid, present, newCost), newCost + ExpectFunc(neighborGrid, end));
-                }
-			}
-			return null;
-        }
-		
-        int ExpectFunc(FullGrid start,FullGrid end)
-		{
-			Vector2Int a = start.chunk.chunkIndex * Chunk.ChunkEdgeLength + start.grid;
-			Vector2Int b = end.chunk.chunkIndex * Chunk.ChunkEdgeLength + end.grid;
-			Vector2Int c = b - a;
-			return (Mathf.Abs(c.x) + Mathf.Abs(c.y)) * Chunk.DefaultGridCost;
-		}
-        List<FullGrid> CutPath(PathGrid target)
-        {
-			var current = target;
-			var pathList = new List<FullGrid>();
-			while (current.lastPathGrid != null) 
-			{
-				pathList.Add(current.fullGrid);
-				current = current.lastPathGrid;
-            }
-            //共线点删除
-            int index = pathList.Count - 1;
-            while (pathList.Count > 0) 
-			{
-				var a = pathList[index] - pathList[index - 1];
-				var b = pathList[index - 1] - pathList[index - 2];
-                if (a == b)
-				{
-					pathList.RemoveAt(index - 1);
-                }
-				index--;
-            }
-			return pathList;
         }
     }
 }

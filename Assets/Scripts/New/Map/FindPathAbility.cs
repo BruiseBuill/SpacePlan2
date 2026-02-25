@@ -24,10 +24,13 @@ namespace MapSearch
         [SerializeField] bool isMoving;
 
         [FoldoutGroup("Parameter")]
+        [SerializeField] float realSpeed;
+        [FoldoutGroup("Parameter")]
         [SerializeField] float maxSpeed;
+        [FoldoutGroup("Parameter")]
         [SerializeField] float accelerate = 10f;
 
-        float arriveRadius;
+        [SerializeField] float sqrArriveRadius;
         
         Vector3 AimPos
         {
@@ -49,7 +52,7 @@ namespace MapSearch
 
             onAskFindPath += Move;
 
-            arriveRadius = maxSpeed * maxSpeed / accelerate * 0.5f;
+            sqrArriveRadius = (maxSpeed * maxSpeed / accelerate) * (maxSpeed * maxSpeed / accelerate)*0.25f;
         }
         void FindPath()
         {
@@ -78,14 +81,55 @@ namespace MapSearch
         {
             isWaitingReFindPath = true;
             yield return null;
+            Debug.Log("ReFind");
             FindPath();
         }
         IEnumerator Moving()
         {
             isMoving= true;
-            while ()
+            int pathIndex = 1;
+            Vector3 nextPos = MapManager.Instance().FullGrid2WorldPos(pathList[pathIndex]);
+            Debug.Log("Count"+pathList.Count);
+            while (isMoving)  
             {
-
+                if (pathIndex >= pathList.Count - 1 && ((Vector3)rb.position - aimPos).sqrMagnitude < sqrArriveRadius) 
+                {
+                    Debug.Log(1);
+                    realSpeed = Mathf.Max(0f, realSpeed - Time.deltaTime * accelerate);
+                    Vector2 orient = ((Vector2)aimPos - rb.position).normalized;
+                    rb.velocity = orient * realSpeed;
+                    if (realSpeed == 0f || Vector3.Dot(orient, ((Vector3)rb.position - aimPos)) < 0) 
+                    {
+                        realSpeed = 0f;
+                        rb.velocity = Vector2.zero;
+                        isMoving = false;
+                        Debug.Log("Over");
+                    }
+                }
+                else
+                {
+                    Debug.Log(2);
+                    Debug.Log(nextPos);
+                    realSpeed = Mathf.Min(maxSpeed, realSpeed + Time.deltaTime * accelerate);
+                    //Arrive
+                    if (Vector3.Dot(rb.velocity, nextPos - (Vector3)rb.position) < 0) 
+                    {
+                        pathIndex++;
+                        if (pathIndex < pathList.Count - 1)
+                        {
+                            nextPos = MapManager.Instance().FullGrid2WorldPos(pathList[pathIndex]);
+                            Debug.Log("Arrive" + pathIndex);
+                        }
+                        else
+                        {
+                            nextPos = aimPos;
+                            Debug.Log("Arrive!!" + pathIndex);
+                        }
+                    }
+                    Vector2 orient = ((Vector2)nextPos - rb.position).normalized;
+                    rb.velocity = orient * realSpeed;
+                }
+                yield return null;
             }
         }
     }

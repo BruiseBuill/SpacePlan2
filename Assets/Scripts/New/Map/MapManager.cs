@@ -2,6 +2,7 @@ using BF;
 using Sirenix.Serialization;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace MapSearch
@@ -13,20 +14,25 @@ namespace MapSearch
 
 		[SerializeField] Vector2Int chunkMapSize;
 
-		[ContextMenu("CreateMap")]
+        private void Start()
+        {
+			CreateMap();
+        }
+        [ContextMenu("CreateMap")]
 		public void CreateMap()
 		{
 			int chunkIndex = 0;
 			if (chunkDic.Count > 0)
 				chunkDic.Clear();
-			for (int i = -chunkMapSize.x / 2; i < chunkMapSize.x / 2; i++)
+			for (int i = -chunkMapSize.x / 2; i < chunkMapSize.x / 2; i++)  
 			{
-				for (int j = -chunkMapSize.y / 2; j < chunkMapSize.y / 2; j++)
+				for (int j = -chunkMapSize.y / 2; j < chunkMapSize.y / 2; j++) 
 				{
 					Chunk chunk = chunkList[chunkIndex++];
 					chunk.chunkIndex = new Vector2Int(i, j);
 					chunk.grids = new byte[Chunk.ChunkEdgeLength * Chunk.ChunkEdgeLength];
 					chunk.costs = new byte[Chunk.ChunkEdgeLength * Chunk.ChunkEdgeLength];
+					chunk.pathFindCounter = new byte[Chunk.ChunkEdgeLength * Chunk.ChunkEdgeLength];
 					CreateOneChunkFromWorldData(chunk);
 					chunkDic.Add(chunk.chunkIndex, chunk);
 				}
@@ -97,13 +103,19 @@ namespace MapSearch
             }
             else
             {
-				start.grid += offset - a * Chunk.ChunkEdgeLength;
-				start.chunk = ChunkPos2Chunk(start.chunk.chunkIndex + a);
+				if(ChunkPos2Chunk(start.chunk.chunkIndex + a) != null)
+				{
+                    start.grid += offset - a * Chunk.ChunkEdgeLength;
+                    start.chunk = ChunkPos2Chunk(start.chunk.chunkIndex + a);
+                }
             }
         }
         Chunk ChunkPos2Chunk(Vector2Int index)
 		{
-			return chunkDic[index];
+			if (chunkDic.ContainsKey(index))
+				return chunkDic[index]; 
+			else
+				return null;
         }
         Chunk ChunkPos2Chunk(int i,int j)
         {
@@ -115,12 +127,12 @@ namespace MapSearch
 		{
 			int a = worldPos.x >= 0 ? Mathf.FloorToInt(worldPos.x) : Mathf.FloorToInt(worldPos.x) - 1;
 			int b = worldPos.y >= 0 ? Mathf.FloorToInt(worldPos.y) : Mathf.FloorToInt(worldPos.y) - 1;
-			return new Vector2Int(a > 0 ? a % Chunk.ChunkEdgeLength : a % Chunk.ChunkEdgeLength + Chunk.ChunkEdgeLength, b > 0 ? b % Chunk.ChunkEdgeLength : b % Chunk.ChunkEdgeLength + Chunk.ChunkEdgeLength);
+			return new Vector2Int(a >= 0 ? (a % Chunk.ChunkEdgeLength) : (a % Chunk.ChunkEdgeLength + Chunk.ChunkEdgeLength), b >= 0 ? (b % Chunk.ChunkEdgeLength) : (b % Chunk.ChunkEdgeLength + Chunk.ChunkEdgeLength));
         }
 		Chunk World2Chunk(Vector3 worldPos)
 		{
-			int a = worldPos.x >= 0 ? Mathf.FloorToInt(worldPos.x / Chunk.ChunkEdgeLength) : Mathf.FloorToInt((worldPos.x + 1) / Chunk.ChunkEdgeLength) - 1;
-			int b = worldPos.y >= 0 ? Mathf.FloorToInt(worldPos.y / Chunk.ChunkEdgeLength) : Mathf.FloorToInt((worldPos.y + 1) / Chunk.ChunkEdgeLength) - 1;
+			int a = worldPos.x >= 0 ? Mathf.FloorToInt(worldPos.x / Chunk.ChunkEdgeLength) : Mathf.FloorToInt(worldPos.x / Chunk.ChunkEdgeLength + 1) - 1;
+			int b = worldPos.y >= 0 ? Mathf.FloorToInt(worldPos.y / Chunk.ChunkEdgeLength) : Mathf.FloorToInt(worldPos.y / Chunk.ChunkEdgeLength + 1) - 1;
 			return ChunkPos2Chunk(a, b);
 		}
 		public FullGrid World2FullGrid(Vector3 worldPos)
