@@ -456,8 +456,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4813684785b893468ccf5af4c1f0f25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chunk: {fileID: 11400000, guid: e4fe4c7172c8c744681cef7c9400aee4, type: 2}
-  isDrawChunk: 1
+  isDebugChunk: 0
+  chunkList:
+  - {fileID: 11400000, guid: e4fe4c7172c8c744681cef7c9400aee4, type: 2}
+  - {fileID: 11400000, guid: 8343fee62912e244c8daa99cf6683779, type: 2}
+  - {fileID: 11400000, guid: 67c5e093fa4476b4f82b57475c8e077f, type: 2}
+  - {fileID: 11400000, guid: 426c2b52330f69748af305c2e5a092c7, type: 2}
+  isDrawGrid: 0
+  isDrawPathFinderCounter: 0
+  isDebugPath: 0
 --- !u!4 &1294572333
 Transform:
   m_ObjectHideFlags: 0
@@ -669,6 +676,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d6ded28baa66704ba9eabaec283055f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  searchCounter: 0
 --- !u!114 &1991951168
 MonoBehaviour:
   m_ObjectHideFlags: 0

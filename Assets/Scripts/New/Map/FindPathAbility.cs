@@ -89,12 +89,12 @@ namespace MapSearch
             isMoving= true;
             int pathIndex = 1;
             Vector3 nextPos = MapManager.Instance().FullGrid2WorldPos(pathList[pathIndex]);
+            MapDebug.Instance().DebugPath(pathList);
             Debug.Log("Count"+pathList.Count);
             while (isMoving)  
             {
                 if (pathIndex >= pathList.Count - 1 && ((Vector3)rb.position - aimPos).sqrMagnitude < sqrArriveRadius) 
                 {
-                    Debug.Log(1);
                     realSpeed = Mathf.Max(0f, realSpeed - Time.deltaTime * accelerate);
                     Vector2 orient = ((Vector2)aimPos - rb.position).normalized;
                     rb.velocity = orient * realSpeed;
@@ -108,8 +108,6 @@ namespace MapSearch
                 }
                 else
                 {
-                    Debug.Log(2);
-                    Debug.Log(nextPos);
                     realSpeed = Mathf.Min(maxSpeed, realSpeed + Time.deltaTime * accelerate);
                     //Arrive
                     if (Vector3.Dot(rb.velocity, nextPos - (Vector3)rb.position) < 0) 

@@ -91,7 +91,14 @@ namespace MapSearch
 			}
 			else
 			{
-				return new FullGrid(start.grid + offset - a * Chunk.ChunkEdgeLength, ChunkPos2Chunk(start.chunk.chunkIndex + a));
+				if(ChunkPos2Chunk(start.chunk.chunkIndex + a) != null)
+				{
+                    return new FullGrid(start.grid + offset - a * Chunk.ChunkEdgeLength, ChunkPos2Chunk(start.chunk.chunkIndex + a));
+                }
+				else
+				{
+					return new FullGrid(start.grid, start.chunk);
+                }
 			}
 		}
         public void FullGridMove(FullGrid start, Vector2Int offset)

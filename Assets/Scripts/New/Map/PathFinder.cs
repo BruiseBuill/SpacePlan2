@@ -10,7 +10,7 @@ namespace MapSearch
 {
 	public class PathFinder :Single<PathFinder>
 	{
-		byte searchCounter = 0;
+		public byte searchCounter = 0;
 		const int MaxThreadCount = 10;
 		int usedThreadCount = 0;
         List<Vector2Int> searchDirection = new List<Vector2Int>()
@@ -109,7 +109,24 @@ namespace MapSearch
 			}
 			return new List<FullGrid>() {start, end };
         }
+		bool CanFindPathDirectLine(FullGrid start, FullGrid end)
+        {
+            var startPos = start.chunk.chunkIndex * Chunk.ChunkEdgeLength + start.grid;
+            var endPos = end.chunk.chunkIndex * Chunk.ChunkEdgeLength + end.grid;
 
+            var list = GetLineCells(startPos, endPos);
+            var inter = new FullGrid(start.grid, start.chunk);
+            for (int i = 0; i < list.Count - 1; i++)
+            {
+                MapManager.Instance().FullGridMove(inter, list[i + 1] - list[i]);
+
+                if (inter.chunk.costs[Chunk.Get1DGridIndex(inter.grid)] > 0b11111110)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
         List<FullGrid> FindPathAStar(FullGrid start, FullGrid end)
 		{
 			Debug.Log("Astar");
@@ -130,7 +147,11 @@ namespace MapSearch
 				}
 				for(int i = 0; i < searchDirection.Count; i++)
 				{
-					var neighborGrid = MapManager.Instance().FullGridOffset(present.fullGrid, searchDirection[i]);
+					Debug.Log(present.fullGrid.chunk.chunkIndex);
+					Debug.Log(present.fullGrid.grid);
+					Debug.Log(searchDirection[i]);
+                    var neighborGrid = MapManager.Instance().FullGridOffset(present.fullGrid, searchDirection[i]);
+					Debug.Log(neighborGrid.chunk.chunkIndex);
 					if (neighborGrid.chunk.pathFindCounter[Chunk.Get1DGridIndex(neighborGrid.grid)] == searchCounter) 
 					{
 						continue;
@@ -153,7 +174,6 @@ namespace MapSearch
 		}
         List<FullGrid> CutPath(PathGrid target)
         {
-			
 			var current = target;
 			var pathList = new List<FullGrid>();
 			while (current.lastPathGrid != null) 
@@ -164,17 +184,16 @@ namespace MapSearch
 			pathList.Reverse();
 
 			Debug.Log("BeforeCut" + pathList.Count);
-
 			for (int i = 0; i < pathList.Count; i++)
                 Debug.Log(MapManager.Instance().FullGrid2WorldPos(pathList[i]));
             //¹²ÏßµãÉ¾³ý
             int index = pathList.Count - 1;
-            while (index > 2) 
+            while (index > 1) 
 			{
 				
 				var a = pathList[index] - pathList[index - 1];
 				var b = pathList[index - 1] - pathList[index - 2];
-                if (a == b)
+				if (a.x * b.y - a.y * b.x == 0)  
 				{
                     Debug.Log(MapManager.Instance().FullGrid2WorldPos(pathList[index-1]));
                     pathList.RemoveAt(index - 1);
@@ -184,9 +203,26 @@ namespace MapSearch
             Debug.Log("AfterCut" + pathList.Count);
             for (int i = 0; i < pathList.Count; i++)
                 Debug.Log(MapManager.Instance().FullGrid2WorldPos(pathList[i]));
-            return pathList;
+            return CutDirectLine(pathList);
             
         }
+		List<FullGrid> CutDirectLine(List<FullGrid> path)
+		{
+			int index = path.Count - 1;
+			while (index > 1)
+			{
+				if(CanFindPathDirectLine(path[index], path[index - 2]))
+				{
+					path.RemoveAt(index - 1);
+				}
+
+				index--;
+            }
+			Debug.Log("AfterCutDirectLine" + path.Count);
+			for (int i = 0; i < path.Count; i++)
+                Debug.Log(MapManager.Instance().FullGrid2WorldPos(path[i]));
+            return path;
+		}
         List<Vector2Int> GetLineCells(Vector2Int a, Vector2Int b)
         {
             List<Vector2Int> result = new List<Vector2Int>();
